@@ -39,19 +39,6 @@ public class CertificationController {
         return "result";
     }
 
-    @PostMapping(value = "/resultRegister")
-    @ResponseBody
-    public MemberResultDto resultCertificate(@RequestBody String certTxId) throws Exception {
-
-        System.out.println("certTxId: " + certTxId);
-        MemberResultDto findMember = memberService.findMember(certTxId);
-        MemberResultDto memberResultDto = memberService.setMemberResult(findMember);
-
-        System.out.println(memberResultDto);
-
-        return memberResultDto;
-    }
-
     @PostMapping(value = "/loginRegister")
     @ResponseBody
     public CertificationResponseDto loginCertificate(@RequestBody MemberDto memberDto) throws Exception {
@@ -77,6 +64,19 @@ public class CertificationController {
         postHttpUrlConnectionByRegister(verificationRequestDto, verificationUrl);
 
         return "";
+    }
+
+    @PostMapping(value = "/resultRegister")
+    @ResponseBody
+    public MemberResultDto resultCertificate(@RequestBody String certTxId) throws Exception {
+
+        System.out.println("certTxId: " + certTxId);
+        MemberResultDto findMember = memberService.findMember(certTxId);
+        MemberResultDto memberResultDto = memberService.setMemberResult(findMember);
+
+        System.out.println(memberResultDto);
+
+        return memberResultDto;
     }
 
     private CertificationResponseDto postHttpUrlConnectionByLogin(CertificationRequestDto certificationRequestDto,
