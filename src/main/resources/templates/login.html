@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+<title>PASS 인증서</title>
+<link rel="stylesheet" type="text/css" href="../css/common.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+
+	<!-- header -->
+	<!-- <div class="header">
+	</div> -->
+	<!-- //header -->
+
+	<!-- content -->
+	<div id="content">
+		<div class="container">
+			<div class="page_title">
+				<div class="thum"><img src="https://via.placeholder.com/70" alt="이미지"></div>
+				<div class="inner">
+					<h2>국세청</h2>
+					<p>이름/휴대폰번호를 입력하세요.</p>
+				</div>
+			</div>
+			<div class="login_section">
+				<div class="inner">
+					<!-- <h2 class="tit">이름/휴대폰번호를 입력하세요.</h2> -->
+					<p class="txt">입력 후, <span>PASS앱</span>을 통해 로그인합니다.</p>
+
+					<div class="input_row"><!-- 오류시 error 추가 -->
+						<div class="col"><span><input type="text" id="name" class="form_control" placeholder="이름" autocomplete="off"></span></div>
+						<p class="error_txt">이름을 바르게 입력해주세요. 잘못된 문자가 포함되어 있습니다.</p>
+					</div>
+					<div class="input_row"><!-- 오류시 error 추가 -->
+						<div class="col"><span><input type="tel" id="birthday" class="form_control" maxlength="6" placeholder="생년월일" autocomplete="off"></span></div>
+						<p class="error_txt">생년월일을 바르게 입력해주세요. 잘못된 문자가 포함되어 있습니다.</p>
+					</div>
+					<div class="input_row telecom">
+						<ul class="radio">
+							<li class="on">
+								<input type="radio" id="divide01" name="telCdRadio" checked="" value="SKT" class="telCdRadioSkt">
+								<label class="fs20" for="divide01"><!-- SKT --><span></span></label>
+							</li>
+							<li class="">
+								<input type="radio" id="divide02" name="telCdRadio" value="KT" class="telCdRadioKt">
+								<label class="fs20" for="divide02"><!-- KT --><span></span></label>
+							</li>
+							<li class="">
+								<input type="radio" id="divide03" name="telCdRadio" value="LGT" class="telCdRadioLgt">
+								<label class="fs20" for="divide03"><!-- LG U+ --><span></span></label>
+							</li>
+						</ul>
+					</div>
+					<div class="input_row"><!-- 오류시 error 추가 -->
+						<div class="col">
+
+
+									<div>010
+							<input type="text" id="phone_num" placeholder="휴대폰 번호">
+									</div>
+
+
+						</div>
+						<p class="error_txt">!<span>이름/휴대폰번호를 정확히 입력해주세요.</span></p>
+					</div>
+					<div class="input_row gender">
+						<ul class="radio">
+							<li class="on">
+								<span><input type="radio" id="gender01" name="genderRadio" checked="" value="M">남</span>
+<!--							</li>-->
+<!--							<li class="">-->
+								<span><input type="radio" id="gender02" name="genderRadio" value="F">여</span>
+							</li>
+						</ul>
+					</div>
+					<div class="auth_faq">
+						<div class="item">
+							<div class="q"><p><strong>인증서</strong> 사용에 어려움이 있으신가요?</p> <button type="button"><span>열고닫기</span></button></div>
+							<div class="a">
+								<div class="subtit"><span class="num">①</span> PASS 앱 설치 혹은 인증서 발급을 하셨나요?</div>
+								<p>PASS인증서 이용을 위해선 PASS 앱 설치 및 PASS 인증서 발급 후 이용하실 수 있습니다.</p>
+
+								<div class="subtit"><span class="num">②</span> 인증 요청을 했는데 오류가 발생한다고요?</div>
+								<p>PASS 인증서 <a href="#g">자주묻는질문</a> 을 참고해주세요.</p>
+							</div>
+						</div>
+					</div>
+
+					
+					<div class="btnG">
+						<div><button type="button" id= "register" class="ok"><span>다음</span></button></div>
+					</div>
+				</div>
+			</div><!-- // login_section -->
+		</div>
+	</div>
+	<!-- // content -->
+
+</div>
+
+<script>
+$(document).ready(function(){
+	$("div.telecom .radio li input[type='radio']").on("click", function(){
+		$(this).parents().siblings().removeClass("on");
+		$(this).parent("li").addClass("on");
+	})
+	$("div.telecom .radio li input[type='radio']").each(function(){
+		if($(this).prop('checked')){
+			$(this).parent("li").addClass("on");
+		}else{
+			$(this).parent("li").removeClass("on");
+		}
+	})
+
+	$(".auth_faq div.q").on("click", function(){
+		$(this).closest(".item").toggleClass("active")
+	});
+
+	$('#register').click(
+			function() { //사이트 요청
+
+					$.ajax ({
+						type : "POST",
+						url : "/loginRegister",
+						dataType: 'json',
+						contentType: "application/json",
+						data : JSON.stringify({
+							"userNm" : $('#name').val(),
+							"birthday" : $('#birthday').val(),
+							"telcoTyCd" : $(
+									"input[name='telCdRadio']:checked")
+									.val(),
+							"phoneNo" : $('#phone_num').val(),
+							"gender" : $(
+									"input[name='genderRadio']:checked")
+									.val(),
+						}),
+						success : function(data) {
+							// localStorage.setItem("certTxId", JSON.stringify(data["certTxId"]))
+							localStorage.setItem("certTxId", data["certTxId"])
+							location.href ='http://localhost:8080/join?';
+							alert('사이트 요청 성공');
+                        },
+                        error : function(error) {
+                            alert('사이트 요청 실패');
+                        }
+					})
+			});
+
+
+	/*$(".input_row input[type='text'], .input_row select").on("focus", function(){
+		$(this).parents(".input_row").addClass("focus");
+	})
+	$(".input_row input[type='text'], .input_row select").on("focusout", function(){
+		$(this).parents(".input_row").removeClass("focus");
+	})*/
+})
+</script>
+
+</body>
+</html>

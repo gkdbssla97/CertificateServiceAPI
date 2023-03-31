@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>PASS 인증서</title>
+    <link rel="stylesheet" type="text/css" href="../css/common.css">
+    <link rel="stylesheet" href="../css/slick.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="../js/slick.min.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+
+    <!-- header -->
+    <!-- <div class="header">
+    </div> -->
+    <!-- //header -->
+
+    <!-- content -->
+    <div id="content">
+        <div class="container">
+
+            <div class="page_title">
+                <div class="thum"><img src="https://via.placeholder.com/70" alt="이미지"></div>
+                <div class="inner">
+                    <h2>국세청</h2>
+                    <p>PASS 앱에서 인증을 완료해주세요.</p>
+                </div>
+            </div>
+
+            <!-- <div class="page_title">
+                <div class="inner">
+                    <h2><em class="blind">PASS 인증서</em></h2>
+                    <p>휴대폰 PASS앱에서 인증을 완료해주세요.</p>
+                </div>
+            </div> -->
+
+            <div class="join_section">
+
+                <div class="timeout">유효시간 05:00
+                    <div class="loading_bar1">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+
+                <div class="inner">
+
+
+                    <div class="slide_wrap">
+                        <div class="step_slide">
+                            <div class="item">
+                                <ol class="join_step">
+                                    <li><span>STEP1.</span>내 휴대폰번호로 발송된 PUSH 선택 <img src="../images/img_step1.png"
+                                                                                     alt=""></li>
+                                    <li><span>STEP2.</span>PASS에 등록한 PIN또는 생체인증<img src="../images/img_step2.png"
+                                                                                    alt=""></li>
+                                    <li><span>STEP3.</span>인증 완료 후, 아래 <strong>다음</strong>버튼 클릭</li>
+                                </ol>
+                                <div class="join_step_btm">
+                                    <p>PUSH가 오지 않은 경우,<br>스마트폰에서 PASS를 실행해주세요.</p>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="howto">
+                                    <div class="tit"><strong>인증요청(알림)이 휴대폰으로 오지 않는다면?</strong></div>
+                                    <div class="txt">
+                                        <p>① [PASS 앱> 홈 화면 또는 인증서 메뉴] 에서 인증 요청 내용을 확인할 수 있습니다.</p>
+                                        <p>② PASS 앱 설치 확인 및 알림 수신동의 되어 있는지 확인해 주세요.</p>
+                                        <p>③ 문제가 계속된다면 [PASS인증서 고객센터 : 1800-4273] 로 연락해 주세요.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="btnG">
+                        <div>
+                            <button type="button" id="reRegister" class="again"><span>다시 요청</span></button>
+                        </div>
+                        <div>
+                            <button type="button" id="next" class="ok"><span>다음</span></button>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div><!-- // join_section -->
+
+        </div>
+    </div>
+    <!-- // content -->
+
+    <!-- footer -->
+    <div class="footer">
+    </div>
+    <!-- //footer -->
+</div>
+
+
+<span class="deem"></span>
+
+<!-- LAYER POP -->
+<div id="layer" class="layer" style="display:block;">
+    <div class="layer_body">
+        <p class="message timeout"><!-- timeout, error, transient -->
+            인증 시간을 초과하였습니다.<br>요청을 종료합니다.
+        </p>
+    </div>
+    <div class="layer_btnwrap">
+        <a href="#">확인</a>
+    </div>
+</div>
+<!-- //LAYER POP -->
+
+
+<script>
+    $(document).ready(function () {
+
+    })
+    $('.layer .layer_btnwrap a').on("click", function () {
+        $(this).parents(".layer").hide();
+        $("span.deem").hide();
+    })
+
+    /* 이미지 slick.js 슬라이드 */
+    $('.step_slide').slick({
+        autoplay: true,
+        autoplaySpeed: 5000,
+    });
+    // $(".step_slide").slick({
+    // 	infinite: false,
+    // 	autoplay: false,
+    // 	arrows: true,
+    // 	speed:300,
+    // 	dots: false,
+    // 	centerMode: true,
+    // 	focusOnSelect: false,
+    // });
+    // "certTxId": localStorage.getItem("certTxId")
+    $('#reRegister').click(
+        function() { //사이트 다시 요청
+
+            $.ajax ({
+                type : "POST",
+                url : "/joinRegister",
+                dataType: 'json',
+                contentType: "application/json",
+                data :
+                    // "certTxId": JSON.parse(localStorage.getItem('certTxId'))
+                    localStorage.getItem('certTxId')
+                ,
+                success : function(data) {
+                    console.log(JSON.parse(data));
+                    console.log(data);
+                },
+                error : function(data) {
+                    console.log(data)
+                }
+            })
+        });
+    $('#next').click(
+        function() { //사이트 요청
+
+            $.ajax ({
+                type : "POST",
+                url : "/resultRegister",
+                dataType: 'json',
+                contentType: "application/json",
+                data :
+                    localStorage.getItem('certTxId')
+                ,
+                success : function(data) {
+                    location.href ='http://localhost:8080/result?';
+                    //localStorage.setItem('result', JSON.stringify(data))
+                },
+                error : function(error) {
+                    alert('사이트 요청 실패');
+                }
+            })
+        });
+</script>
+
+
+</body>
+</html>

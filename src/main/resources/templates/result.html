@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Certification Result Browser</title>
+
+  <style>
+    th, td {
+      vertical-align : top;
+    }
+
+    #searchTb {
+      word-break: break-all;
+    }
+    table > tbody > tr > td:last-of-type {
+      padding-left:16px;
+    }
+    table > tbody > tr > th:nth-of-type(4) {
+      color:navy;
+    }
+  </style>
+</head>
+<body>
+<table style="height:calc(100vh - 16px);">
+  <tr>
+    <td style="border-right: 3px solid navy;">
+    </td>
+    <td width="2000" valign="top">
+      <table border = 1>
+        <h3 style= "border-bottom: 3px solid navy; margin-left:-16px; padding-left:16px;">> 검증 결과 요청</h3></br>
+
+        <thead>
+        <tr>
+          <th>reqTxId</th>
+          <th>telcoTxcd</th>
+          <th>certTxId</th>
+          <th>resultTycd</th>
+          <th width="150px">digitalSign</th>
+          <th width="150px">CI</th>
+          <th>decryptedCI</th>
+          <th>userNm</th>
+          <th>decryptedUserNm</th>
+          <th>birthday</th>
+          <th>decryptedBirthday</th>
+          <th>gender</th>
+          <th>decryptedGender</th>
+        </tr>
+        </thead>
+        <tbody id ='searchTb'>
+
+        </tbody>
+      </table>
+    </td>
+  </tr>
+</table>
+</body>
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script>
+  $(document).ready(function () {
+    $.ajax ({
+      type : "POST",
+      url : "/resultRegister",
+      dataType: 'json',
+      contentType: "application/json",
+      data :
+          localStorage.getItem('certTxId')
+      ,
+      success : function(data) {
+        showSearchTable(data);
+      },
+      error : function(error) {
+        alert('사이트 요청 실패');
+      }
+    })
+  });
+  function showSearchTable(data) {
+
+
+    var html = "<tr>";
+    html += "<th>" + data.reqTxId + "</th>";
+    html += "<th>" + data.telcoTxId + "</th>";
+    html += "<th>" + data.certTxId + "</th>";
+    html += "<th>" + data.resultTycd + "</th>";
+    html += "<th>" + data.digitalSign + "</th>";
+    html += "<th>" + data.ci + "</th>";
+    html += "<th>" + data.decryptedCI + "</th>";
+    html += "<th>" + data.userNm + "</th>";
+    html += "<th>" + data.decryptedUserNm + "</th>";
+    html += "<th>" + data.birthday + "</th>";
+    html += "<th>" + data.decryptedBirthday + "</th>";
+    html += "<th>" + data.gender + "</th>";
+    html += "<th>" + data.decryptedGender + "</th>";
+    html += "</tr>";
+
+    $("#searchTb").empty();
+    $("#searchTb").append(html);
+  }
+</script>
+</html>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.miniProj.domain.dao.PostMemberMapper">
+
+    <insert id="saveMember">
+        insert into member (companyCd, serviceTycd, reqTitle,
+                           reqCSPhoneNo, reqEndDttm,
+                            signTargetTycd, signTarget,
+                           reqTxId, telcoTyCd, phoneNo, userNm, birthday, gender)
+        values (#{certificationRequestDto.companyCd}, #{certificationRequestDto.serviceTycd}, #{certificationRequestDto.reqTitle},
+                #{certificationRequestDto.reqCSPhoneNo}, #{certificationRequestDto.reqEndDttm},
+                #{certificationRequestDto.signTargetTycd}, #{certificationRequestDto.signTarget},
+                #{certificationRequestDto.reqTxId}, #{certificationRequestDto.memberDto.telcoTyCd},
+                #{certificationRequestDto.memberDto.phoneNo},
+                #{certificationRequestDto.memberDto.userNm}, #{certificationRequestDto.memberDto.birthday},
+                #{certificationRequestDto.memberDto.gender});
+
+    </insert>
+    <update id="saveCertTxId">
+        update member
+        set certTxId = #{certificationResponseDto.certTxId}
+        where reqTxId = #{certificationResponseDto.reqTxId}
+          and certTxId is null
+    </update>
+    <update id="saveVerifyResult">
+        update member
+        set telcoTxId = #{verifyResultResponseDto.telcoTxId},
+            resultTycd  = #{verifyResultResponseDto.resultTycd},
+            resultDttm  = #{verifyResultResponseDto.resultDttm},
+            digitalSign = #{verifyResultResponseDto.digitalSign},
+            ci          = #{verifyResultResponseDto.ci}
+        where reqTxId = #{verifyResultResponseDto.reqTxId}
+          and resultTycd is null
+          and resultDttm is null
+          and digitalSign is null
+          and ci is null
+    </update>
+</mapper>

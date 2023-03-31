@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.miniProj.domain.dao.GetMemberMapper">
+    <select id="getResult" resultType="com.example.miniProj.domain.dto.VerificationRequestDto">
+        select companyCd
+             , reqTxId
+             , certTxId
+             , phoneNo
+            , userNm
+        from member m
+        where certTxId = #{certTxId}
+
+    </select>
+    <select id="findCertification" resultType="com.example.miniProj.domain.dto.CertificationFindDto">
+        select companyCd
+             , serviceTycd
+             , reqTitle
+             , reqCSPhoneNo
+             , reqEndDttm
+             , signTargetTycd
+             , signTarget
+             , reqTxId
+             , isCombineAuth
+             , isDigitalSign
+             , isNotification
+             , isPASSVerify
+             , isUserAgreement
+             , telcoTyCd
+             , phoneNo
+             , userNm
+             , birthday
+             , gender
+        from member m
+        where certTxId = #{certTxId}
+    </select>
+    <select id="findMember" resultType="com.example.miniProj.domain.dto.MemberResultDto">
+        select reqTxId
+             , telcoTxId
+             , certTxId
+             , resultTycd
+             , digitalSign
+             , ci
+             , userNm
+             , birthday
+             , gender
+        from member
+        where certTxId = #{certTxId}
+    </select>
+</mapper>
