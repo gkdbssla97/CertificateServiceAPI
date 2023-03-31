@@ -25,7 +25,7 @@
         <div class="container">
 
             <div class="page_title">
-                <div class="thum"><img src="https://via.placeholder.com/70" alt="이미지"></div>
+                <div class="thum"><img src="images/tax.png" alt="이미지"></div>
                 <div class="inner">
                     <h2>국세청</h2>
                     <p>PASS 앱에서 인증을 완료해주세요.</p>
@@ -41,7 +41,7 @@
 
             <div class="join_section">
 
-                <div class="timeout">유효시간 05:00
+                <div class="timeout" id="Timer">
                     <div class="loading_bar1">
                         <span></span>
                         <span></span>
@@ -88,8 +88,6 @@
                             <button type="button" id="next" class="ok"><span>다음</span></button>
                         </div>
                     </div>
-
-
                 </div>
             </div><!-- // join_section -->
 
@@ -121,9 +119,49 @@
 
 
 <script>
-    $(document).ready(function () {
+    const Timer=document.getElementById('Timer'); //스코어 기록창-분
+    let time= 300000;
+    let min=3;
+    let sec=60;
 
+    Timer.value=min+":"+'00';
+    function TIMER(){
+        play_time=setInterval(function(){
+            time=time-1000; //1초씩 줄어듦
+            min=time/(60*1000); //초를 분으로 나눠준다.
+
+            if(sec>0){ //sec=60 에서 1씩 빼서 출력해준다.
+                sec=sec-1;
+                if(sec < 10) {
+                    Timer.value = Math.floor(min) + ':0' + sec; //실수로 계산되기 때문에 소숫점 아래를 버리고 출력해준다.
+                }
+                else {
+                    Timer.value = Math.floor(min) + ':' + sec; //실수로 계산되기 때문에 소숫점 아래를 버리고 출력해준다.
+                }
+            }
+            if(sec===0){
+                // 0에서 -1을 하면 -59가 출력된다.
+                // 그래서 0이 되면 바로 sec을 60으로 돌려주고 value에는 0을 출력하도록 해준다.
+                sec=60;
+                Timer.value=Math.floor(min)+':'+'00'
+            }
+            Timer.innerHTML = '유효시간 ' + Timer.value;
+        },1000); //1초마다
+    }
+
+
+    TIMER();
+    setTimeout(function(){
+        clearInterval(play_time);
+        $("span.deem").show();
+        $('.layer').show();
+    },300000); //5분이 되면 타이머를 삭제한다.
+
+    $(document).ready(function () {
+        $("span.deem").hide();
+        $('.layer').hide();
     })
+
     $('.layer .layer_btnwrap a').on("click", function () {
         $(this).parents(".layer").hide();
         $("span.deem").hide();

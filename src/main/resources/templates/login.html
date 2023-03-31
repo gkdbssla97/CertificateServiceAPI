@@ -21,7 +21,7 @@
 	<div id="content">
 		<div class="container">
 			<div class="page_title">
-				<div class="thum"><img src="https://via.placeholder.com/70" alt="이미지"></div>
+				<div class="thum"><img src="images/tax.png" alt="이미지"></div>
 				<div class="inner">
 					<h2>국세청</h2>
 					<p>이름/휴대폰번호를 입력하세요.</p>
@@ -37,7 +37,7 @@
 						<p class="error_txt">이름을 바르게 입력해주세요. 잘못된 문자가 포함되어 있습니다.</p>
 					</div>
 					<div class="input_row"><!-- 오류시 error 추가 -->
-						<div class="col"><span><input type="tel" id="birthday" class="form_control" maxlength="6" placeholder="생년월일" autocomplete="off"></span></div>
+						<div class="col"><span><input type="tel" id="birthday" class="form_control" maxlength="6" placeholder="생년월일 ex) 970207" autocomplete="off"></span></div>
 						<p class="error_txt">생년월일을 바르게 입력해주세요. 잘못된 문자가 포함되어 있습니다.</p>
 					</div>
 					<div class="input_row telecom">
@@ -58,26 +58,27 @@
 					</div>
 					<div class="input_row"><!-- 오류시 error 추가 -->
 						<div class="col">
-
-
 									<div>010
-							<input type="text" id="phone_num" placeholder="휴대폰 번호">
+							<input type="text" id="phone_num" placeholder="휴대폰 번호 (010 빼고 입력)">
 									</div>
-
-
 						</div>
 						<p class="error_txt">!<span>이름/휴대폰번호를 정확히 입력해주세요.</span></p>
 					</div>
+
 					<div class="input_row gender">
 						<ul class="radio">
 							<li class="on">
-								<span><input type="radio" id="gender01" name="genderRadio" checked="" value="M">남</span>
-<!--							</li>-->
-<!--							<li class="">-->
-								<span><input type="radio" id="gender02" name="genderRadio" value="F">여</span>
+								<input type="radio" id="gender01" name="genderRadio" checked="" value="M" class="telCdRadioM">
+								<label class="fs20" for="gender01"><!-- SKT --><span></span></label>
+							</li>
+							<li class="">
+								<input type="radio" id="gender02" name="genderRadio" value="F" class="telCdRadioF">
+								<label class="fs20" for="gender02"><!-- KT --><span></span></label>
 							</li>
 						</ul>
 					</div>
+
+
 					<div class="auth_faq">
 						<div class="item">
 							<div class="q"><p><strong>인증서</strong> 사용에 어려움이 있으신가요?</p> <button type="button"><span>열고닫기</span></button></div>
@@ -102,8 +103,56 @@
 	<!-- // content -->
 
 </div>
-
+<script src="http://code.jquery.com/jquery-3.1.1.js"></script>
 <script>
+	$('#name').keyup(function(e) {
+		let content = $(this).val();
+
+		regexp = /[a-z0-9]|[ \[\]{}()<>?|`~!@#$%^&*-_+=,.;:\"'\\]/g;
+		v = $(this).val();
+		if (regexp.test(v)) {
+			alert("한글만 입력가능 합니다.");
+			$(this).val(v.replace(regexp, ''));
+		}
+		if (content.length > 10) {
+			$(this).val($(this).val().substring(0, 10));
+			alert('글자수는 10자까지 입력 가능합니다.');
+		}
+
+	});
+
+	$('#birthday').keyup(function(e) {
+		let birthday = $(this).val();
+
+		regexp = /^[0-9]*$/g;
+		v = $(this).val();
+		if (!regexp.test(v)) {
+			alert("숫자만 입력가능 합니다.");
+			$(this).val(v.replace(regexp, ''));
+		}
+		if (birthday.length > 6) {
+			$(this).val($(this).val().substring(0, 6));
+			alert('생년월일 6자리를 입력하십시오.');
+		}
+
+	});
+
+	$('#phone_num').keyup(function (e) {
+		var phoneNum = $(this).val();
+		regexp = /^[0-9]*$/g;
+		console.log(phoneNum, $("#phone_num").val().length);
+		v = $(this).val();
+		if (!regexp.test(v) ) {
+			alert("숫자만 입력가능 합니다.");
+			$(this).val(v.replace(regexp, ''));
+		}
+		if (phoneNum.length > 8) {
+			$(this).val($(this).val().substring(0, 8));
+			alert('휴대폰 번호는 010을 빼고 입력하십시오.');
+		}
+	});
+
+
 $(document).ready(function(){
 	$("div.telecom .radio li input[type='radio']").on("click", function(){
 		$(this).parents().siblings().removeClass("on");
@@ -117,13 +166,24 @@ $(document).ready(function(){
 		}
 	})
 
+	$("div.gender .radio li input[type='radio']").on("click", function(){
+		$(this).parents().siblings().removeClass("on");
+		$(this).parent("li").addClass("on");
+	})
+	$("div.gender .radio li input[type='radio']").each(function(){
+		if($(this).prop('checked')){
+			$(this).parent("li").addClass("on");
+		}else{
+			$(this).parent("li").removeClass("on");
+		}
+	})
+
 	$(".auth_faq div.q").on("click", function(){
 		$(this).closest(".item").toggleClass("active")
 	});
 
 	$('#register').click(
 			function() { //사이트 요청
-
 					$.ajax ({
 						type : "POST",
 						url : "/loginRegister",
