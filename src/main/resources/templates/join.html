@@ -121,7 +121,7 @@
 <script>
     const Timer=document.getElementById('Timer'); //스코어 기록창-분
     let time= 300000;
-    let min=3;
+    let min=5;
     let sec=60;
 
     Timer.value=min+":"+'00';
@@ -165,6 +165,7 @@
     $('.layer .layer_btnwrap a').on("click", function () {
         $(this).parents(".layer").hide();
         $("span.deem").hide();
+        location.href ='http://localhost:8080/login';
     })
 
     /* 이미지 slick.js 슬라이드 */
@@ -184,10 +185,9 @@
     // "certTxId": localStorage.getItem("certTxId")
     $('#reRegister').click(
         function() { //사이트 다시 요청
-
             $.ajax ({
                 type : "POST",
-                url : "/joinRegister",
+                url : "/reRequestRegister",
                 dataType: 'json',
                 contentType: "application/json",
                 data :
@@ -195,30 +195,37 @@
                     localStorage.getItem('certTxId')
                 ,
                 success : function(data) {
-                    console.log(JSON.parse(data));
-                    console.log(data);
+                    localStorage.setItem("certTxId", data["certTxId"])
+                    location.reload();
                 },
                 error : function(data) {
                     console.log(data)
                 }
             })
         });
+
     $('#next').click(
         function() { //사이트 요청
 
             $.ajax ({
                 type : "POST",
-                url : "/resultRegister",
+                url : "/joinRegister",
                 dataType: 'json',
                 contentType: "application/json",
                 data :
                     localStorage.getItem('certTxId')
                 ,
                 success : function(data) {
-                    location.href ='http://localhost:8080/result?';
-                    //localStorage.setItem('result', JSON.stringify(data))
+                    if (data['resultTycd'] != 1) {
+                        alert('인증이 실패했습니다.');
+                    } else {
+                        location.href = 'http://localhost:8080/result?';
+                        console.log(data);
+                        alert('인증이 완료되었습니다.');
+                    }
                 },
                 error : function(error) {
+                    console.log(error);
                     alert('사이트 요청 실패');
                 }
             })
