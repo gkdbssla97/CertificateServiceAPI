@@ -8,5 +8,6 @@ public class StageServer {
     public final static String REQ_TITLE = "인증요청 알림 제목";
     public final static String REQ_CSPHONE_NO = "02-786-4273";
     public final static String SIGN_TARGET = "NONE";
-
+    public final static String certificationUrl = "https://api-stg.passauth.co.kr/v1/certification/notice";
+    public final static String verificationUrl = "https://api-stg.passauth.co.kr/v1/certification/result";
 }

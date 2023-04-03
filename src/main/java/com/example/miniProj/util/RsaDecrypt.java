@@ -26,7 +26,7 @@ public class RsaDecrypt {
         String encryptedCiByPublicKey = CI;
 
         //이용기관 등록시 발급한 개인키 파일 로드
-        String fileName = "C:\\homework\\miniProj\\src\\main\\resources\\static\\key\\kmprikey.pem";
+        String fileName = "src/main/resources/static/key/kmprikey.pem";
         Path filePath = Paths.get(fileName);
         String getPrivate = new String(Files.readAllBytes(filePath),
                 Charset.defaultCharset());

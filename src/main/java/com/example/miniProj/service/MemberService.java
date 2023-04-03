@@ -1,6 +1,5 @@
 package com.example.miniProj.service;
 
-import com.example.miniProj.domain.Member;
 import com.example.miniProj.domain.dto.*;
 
 public interface MemberService {
@@ -17,4 +16,11 @@ public interface MemberService {
     // GETMapper
     VerificationRequestDto getResult(String certTxId);
     MemberResultDto findMember(String certTxId);
+
+    CertificationRequestDto findCertification(String certTxId);
+
+    CertificationResponseDto postHttpClientByLogin(CertificationRequestDto certificationRequestDto,
+              String _url);
+    VerifyResultResponseDto postHttpClientByRegister(VerificationRequestDto verificationRequestDto,
+                                                            String _url);
 }
