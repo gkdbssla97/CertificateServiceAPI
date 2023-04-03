@@ -14,7 +14,29 @@
         where certTxId = #{certTxId}
 
     </select>
-    <select id="findCertification" resultType="com.example.miniProj.domain.dto.CertificationFindDto">
+    <resultMap id="CertificationRequestDto" type="com.example.miniProj.domain.dto.CertificationRequestDto">
+        <result property="companyCd" column="companyCd"/>
+        <result property="serviceTycd" column="serviceTycd"/>
+        <result property="reqTitle" column="reqTitle"/>
+        <result property="reqCSPhoneNo" column="reqCSPhoneNo"/>
+        <result property="reqEndDttm" column="reqEndDttm"/>
+        <result property="signTargetTycd" column="signTargetTycd"/>
+        <result property="signTarget" column="signTarget"/>
+        <result property="reqTxId" column="reqTxId"/>
+        <result property="isCombineAuth" column="isCombineAuth"/>
+        <result property="isDigitalSign" column="isDigitalSign"/>
+        <result property="isNotification" column="isNotification"/>
+        <result property="isPASSVerify" column="isPASSVerify"/>
+        <result property="isUserAgreement" column="isUserAgreement"/>
+        <association property="memberDto" javaType="com.example.miniProj.domain.dto.MemberDto">
+            <result property="telcoTyCd" column="telcoTyCd"/>
+            <result property="phoneNo" column="phoneNo"/>
+            <result property="userNm" column="userNm"/>
+            <result property="birthday" column="birthday"/>
+            <result property="gender" column="gender"/>
+        </association>
+    </resultMap>
+    <select id="findCertification" resultMap="CertificationRequestDto">
         select companyCd
              , serviceTycd
              , reqTitle

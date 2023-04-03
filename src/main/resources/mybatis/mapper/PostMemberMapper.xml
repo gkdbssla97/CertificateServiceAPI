@@ -23,7 +23,6 @@
         update member
         set certTxId = #{certificationResponseDto.certTxId}
         where reqTxId = #{certificationResponseDto.reqTxId}
-          and certTxId is null
     </update>
     <update id="saveVerifyResult">
         update member
@@ -33,9 +32,9 @@
             digitalSign = #{verifyResultResponseDto.digitalSign},
             ci          = #{verifyResultResponseDto.ci}
         where reqTxId = #{verifyResultResponseDto.reqTxId}
-          and resultTycd is null
-          and resultDttm is null
-          and digitalSign is null
-          and ci is null
+#           and resultTycd is null
+#           and resultDttm is null
+#           and digitalSign is null
+#           and ci is null
     </update>
 </mapper>
