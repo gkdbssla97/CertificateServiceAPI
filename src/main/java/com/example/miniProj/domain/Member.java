@@ -2,20 +2,16 @@ package com.example.miniProj.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
-import org.json.simple.JSONObject;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 public class Member {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false)
     private Long id;
     @Column(name = "companyCd", length = 5)
     private String companyCd; //이용기관 코드
@@ -76,9 +72,9 @@ public class Member {
     private String resultTycd; //서명대상정보
     @Column(name = "resultDttm", length = 20)
     private String resultDttm; //서명대상정보
-    @Column(name = "digitalSign")
+    @Lob
     private String digitalSign; //서명대상정보
-    @Column(name = "ci")
+    @Lob
     private String ci; //서명대상정보
 
 
