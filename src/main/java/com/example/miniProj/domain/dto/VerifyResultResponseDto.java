@@ -12,6 +12,5 @@ public class VerifyResultResponseDto {
     private String resultDttm;
     private String digitalSign;
     private String ci;
-    private String telcoTxId;
     private String reqTxId;
 }

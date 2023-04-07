@@ -5,36 +5,36 @@ import com.example.miniProj.domain.dao.GetMemberMapper;
 import com.example.miniProj.domain.dao.PostMemberMapper;
 import com.example.miniProj.domain.dto.*;
 import com.example.miniProj.util.AESCipher;
-import com.example.miniProj.util.RsaDecrypt;
-import com.example.miniProj.util.StageServer;
+import com.example.miniProj.util.Constants;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.hibernate.service.spi.ServiceException;
+import org.apache.http.util.EntityUtils;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
 
-import java.net.SocketTimeoutException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.ThreadLocalRandom;
+
+import static com.example.miniProj.util.Constants.FIRST_REGISTER;
+import static com.example.miniProj.util.Constants.RE_REGISTER;
 
 @Service
 @RequiredArgsConstructor
@@ -69,13 +69,13 @@ public class MemberServiceImpl implements MemberService {
     public CertificationRequestDto setCertification(MemberDto memberDto) throws Exception {
 
         return CertificationRequestDto.builder()
-                .companyCd(StageServer.COMPANYCD)
-                .serviceTycd(StageServer.SERVICETYCD)
-                .reqTitle(StageServer.REQ_TITLE)
-                .reqCSPhoneNo(StageServer.REQ_CSPHONE_NO)
+                .companyCd(Constants.COMPANYCD)
+                .serviceTycd(Constants.SERVICETYCD_LIST.get(3))
+                .reqTitle(Constants.REQ_TITLE)
+                .reqCSPhoneNo(Constants.REQ_CSPHONE_NO)
                 .reqEndDttm(createExpirationTime())
                 .signTargetTycd("4")
-                .signTarget(StageServer.SIGN_TARGET)
+                .signTarget(Constants.SIGN_TARGET)
                 .reqTxId(createReqTxId())
                 .isCombineAuth("N")
                 .isDigitalSign("Y")
@@ -89,9 +89,9 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public MemberResultDto setMemberResult(MemberResultDto memberResultDto) throws Exception {
 
-        AESCipher aesCipher = new AESCipher(StageServer.ENCRYPT_KEY);
-        RsaDecrypt rsaDecrypt = new RsaDecrypt();
-        String decryptCI = rsaDecrypt.decrypt(memberResultDto.getCi());
+        AESCipher aesCipher = new AESCipher(Constants.ENCRYPT_KEY);
+//        RsaDecrypt rsaDecrypt = new RsaDecrypt();
+        String decryptCI = aesCipher.decrypt(memberResultDto.getCi());
 
         return MemberResultDto.builder()
                 .reqTxId(memberResultDto.getReqTxId())
@@ -111,8 +111,19 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    public CertificationRequestDto resetReqEndDttm(CertificationRequestDto certificationRequestDto) {
+        certificationRequestDto.setReqEndDttm(createExpirationTime());
+        return certificationRequestDto;
+    }
+
+    @Override
     public void saveCertTxId(CertificationResponseDto certificationResponseDto) {
         postMemberMapper.saveCertTxId(certificationResponseDto);
+    }
+
+    @Override
+    public void updateMemberByReRegister(CertificationResponseDto certificationResponseDto, String reReqEndDttm) {
+        postMemberMapper.updateMemberByReRegister(certificationResponseDto, reReqEndDttm);
     }
 
     @Override
@@ -149,7 +160,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     private MemberDto encryptMemberDto(MemberDto memberDto) throws Exception {
-        AESCipher aesCipher = new AESCipher(StageServer.ENCRYPT_KEY);
+        AESCipher aesCipher = new AESCipher(Constants.ENCRYPT_KEY);
 
         return MemberDto.builder()
                 .telcoTyCd(memberDto.getTelcoTyCd())
@@ -162,7 +173,9 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public CertificationResponseDto postHttpClientByLogin(CertificationRequestDto certificationRequestDto,
-                                                          String _url) {
+                                                          String _url, String registerStatus) throws Exception {
+
+        String entityBody = "";
 
         CloseableHttpClient client = HttpClientBuilder.create().build(); // HttpClient 생성
         HttpPost postRequest = new HttpPost(_url); //POST 메소드 URL 새성
@@ -174,84 +187,90 @@ public class MemberServiceImpl implements MemberService {
                 .build();
         postRequest.setConfig(requestConfig);
 
-        try {
+//        try {
             postRequest.setHeader("Accept", "application/json");
             postRequest.setHeader("Content-Type", "application/json;charset=UTF-8");
-            postRequest.addHeader("Authorization", "Bearer " + StageServer.ACCESS_TOKEN);
+            postRequest.addHeader("Authorization", "Bearer " + Constants.ACCESS_TOKEN);
 
             postRequest.setEntity(new StringEntity(getJsonObjectByLogin(certificationRequestDto).toString(), ContentType.APPLICATION_JSON)); //json 메시지 입력
 
             CloseableHttpResponse response = client.execute(postRequest);
 //            System.out.println("try2:" + response.toString());
             //Response 출력
-            if (response.getStatusLine().getStatusCode() == 200) {
+            entityBody = EntityUtils.toString(response.getEntity());
+            if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                 ResponseHandler<String> handler = new BasicResponseHandler();
-                String body = handler.handleResponse(response);
+//                String body = handler.handleResponse(response);
 
-                System.out.println("httpClient(LOGIN) msg: " + body);
+                System.out.println("httpClient(LOGIN) msg: " + entityBody);
 
                 ObjectMapper objectMapper = new ObjectMapper();
                 CertificationResponseDto certificationResponseDto =
-                        objectMapper.readValue(body, CertificationResponseDto.class);
+                        objectMapper.readValue(entityBody, CertificationResponseDto.class);
 
-                saveCertTxId(certificationResponseDto);
+                if(registerStatus.equals(FIRST_REGISTER)) {
+                    System.out.println("first register: " + certificationResponseDto);
+                    saveCertTxId(certificationResponseDto);
+                } else if (registerStatus.equals(RE_REGISTER)) {
+                    System.out.println("reRegister: " + certificationResponseDto);
+                    updateMemberByReRegister(certificationResponseDto, certificationRequestDto.getReqEndDttm());
+                }
 
                 return certificationResponseDto;
-
-
             } else {
-                System.out.println("response is error : " + response.getStatusLine().getStatusCode());
+                System.out.println("Certification Response is error : " + response.getStatusLine().getStatusCode());
+                System.out.println("else " + entityBody);
+                throw new Exception(entityBody);
             }
-        } catch (RestClientException re) {
-            if(re.getRootCause() instanceof SocketTimeoutException || re.getRootCause() instanceof ConnectTimeoutException) {
-                log.error("socket || connect Timeout error = {}", re);
-            }
-            log.error("timeout error = {}", re);
-            throw new ServiceException("Timeout");
-        }
-        catch (Exception e) {
-            System.err.println(e.toString());
-        }
-        return null;
+
     }
 
     @Override
     public VerifyResultResponseDto postHttpClientByRegister(VerificationRequestDto verificationRequestDto,
-                                                            String _url) {
-        try {
+                                                            String _url) throws Exception {
+        String entityBody = "";
+
+//        try {
             CloseableHttpClient client = HttpClientBuilder.create().build(); // HttpClient 생성
             HttpPost postRequest = new HttpPost(_url); //POST 메소드 URL 새성
             postRequest.setHeader("Accept", "application/json");
             postRequest.setHeader("Content-Type", "application/json;charset=UTF-8");
-            postRequest.addHeader("Authorization", "Bearer " + StageServer.ACCESS_TOKEN);
+//            postRequest.addHeader("Authorization", "Bearer " + StageServer.ACCESS_TOKEN);
 
+            System.out.println("Service Layer: " + verificationRequestDto);
             postRequest.setEntity(new StringEntity(getJsonObjectByRegister(verificationRequestDto).toString(), ContentType.APPLICATION_JSON)); //json 메시지 입력
 
             CloseableHttpResponse response = client.execute(postRequest);
-//
-            if (response.getStatusLine().getStatusCode() == 200) {
-                ResponseHandler<String> handler = new BasicResponseHandler();
-                String body = handler.handleResponse(response);
 
-                System.out.println("httpClient(REGISTER) msg: " + body);
+            ResponseHandler<String> handler = new BasicResponseHandler();
+
+            entityBody = EntityUtils.toString(response.getEntity());
+
+//            String body = handler.handleResponse(response);
+//            System.out.println(response.getStatusLine().getStatusCode());
+            if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+
+                System.out.println("httpClient(REGISTER) msg: " + entityBody);
 
                 ObjectMapper objectMapper = new ObjectMapper();
                 objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
                 objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
                 VerifyResultResponseDto verifyResultResponseDto =
-                        objectMapper.readValue(body, VerifyResultResponseDto.class);
+                        objectMapper.readValue(entityBody, VerifyResultResponseDto.class);
                 saveVerifyResult(verifyResultResponseDto);
 
                 return verifyResultResponseDto;
 
             } else {
-                System.out.println("response is error : " + response.getStatusLine().getStatusCode());
+                System.out.println("Verification Response is error : " + response.getStatusLine().getStatusCode());
+                System.out.println("else " + entityBody);
+                throw new Exception(entityBody);
             }
-        } catch (Exception e) {
-            System.err.println(e.toString());
-        }
-        return null;
+//        } catch (Exception e) {
+//            System.out.println("catch: " + e.getMessage());
+//            throw new Exception(entityBody);
+//        }
     }
 
     private static JSONObject getJsonObjectByLogin(CertificationRequestDto certificationDto) {

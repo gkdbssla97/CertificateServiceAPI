@@ -7,9 +7,10 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 @Builder
-public class CertificationResponseDto {
-    private String reqTxId;
-    private String certTxId;
+public class ErrorResponseDto {
+    private String errorCd;
+    private String message;
     private String telcoTxId;
-//    private String reqEndDttm;
+    private String certTxId;
+    private String reqTxId;
 }

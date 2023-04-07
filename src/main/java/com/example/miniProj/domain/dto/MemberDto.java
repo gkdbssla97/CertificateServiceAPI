@@ -1,6 +1,5 @@
 package com.example.miniProj.domain.dto;
 
-import com.example.miniProj.domain.Member;
 import lombok.*;
 
 @Data

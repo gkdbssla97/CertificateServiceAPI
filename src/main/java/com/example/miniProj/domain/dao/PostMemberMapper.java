@@ -13,4 +13,6 @@ public interface PostMemberMapper {
     void saveMember(@Param("certificationRequestDto") CertificationRequestDto certificationRequestDto);
     void saveCertTxId(@Param("certificationResponseDto") CertificationResponseDto certificationResponseDto);
     void saveVerifyResult(@Param("verifyResultResponseDto") VerifyResultResponseDto verifyResultResponseDto);
+    void updateMemberByReRegister(@Param("certificationResponseDto") CertificationResponseDto certificationResponseDto,
+                                  @Param("reReqEndDttm") String reReqEndDttm);
 }

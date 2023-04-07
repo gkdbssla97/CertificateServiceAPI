@@ -71,4 +71,11 @@
         from member
         where certTxId = #{certTxId}
     </select>
+    <select id="findServiceTycd" resultType ="com.example.miniProj.domain.dto.ServiceTycdDto">
+        select serviceTycd,
+               signTargetTycd
+        from member
+        where HEX(AES_DECRYPT('userNm', 'YzNmOGQ2OGI1ZDEwNDA5YmJmZmRhMTI5')) = #{memberDto.userNm}
+          and HEX(AES_DECRYPT('phoneNo', 'YzNmOGQ2OGI1ZDEwNDA5YmJmZmRhMTI5')) = #{memberDto.phoneNo}
+    </select>
 </mapper>

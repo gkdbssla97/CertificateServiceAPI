@@ -216,22 +216,26 @@
                     localStorage.getItem('certTxId')
                 ,
                 success : function(data) {
-                    if (data['resultTycd'] != 1) {
-                        alert('인증이 실패했습니다.');
-                    } else {
+                    if (data['resultTycd'] == "1") {
                         location.href = 'http://localhost:8080/result?';
                         console.log(data);
                         alert('인증이 완료되었습니다.');
+                    } else {
+                        console.log(data)
+                        alert('인증이 실패했습니다.');
                     }
                 },
                 error : function(error) {
-                    console.log(error);
-                    alert('사이트 요청 실패');
+                    console.log(error.responseJSON)
+                    console.log(error.responseJSON.errorCode);
+                    console.log(error.responseJSON.message);
+                    console.log(error.responseJSON.httpStatus);
+                    alert(error.responseJSON.errorCode + '\n' +
+                        error.responseJSON.message + '\n' +
+                        error.responseJSON.httpStatus);
                 }
             })
         });
 </script>
-
-
 </body>
 </html>

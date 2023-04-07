@@ -21,13 +21,13 @@
     </insert>
     <update id="saveCertTxId">
         update member
-        set certTxId = #{certificationResponseDto.certTxId}
+        set certTxId = #{certificationResponseDto.certTxId},
+            telcoTxId = #{certificationResponseDto.telcoTxId}
         where reqTxId = #{certificationResponseDto.reqTxId}
     </update>
     <update id="saveVerifyResult">
         update member
-        set telcoTxId = #{verifyResultResponseDto.telcoTxId},
-            resultTycd  = #{verifyResultResponseDto.resultTycd},
+        set resultTycd  = #{verifyResultResponseDto.resultTycd},
             resultDttm  = #{verifyResultResponseDto.resultDttm},
             digitalSign = #{verifyResultResponseDto.digitalSign},
             ci          = #{verifyResultResponseDto.ci}
@@ -36,5 +36,12 @@
 #           and resultDttm is null
 #           and digitalSign is null
 #           and ci is null
+    </update>
+    <update id="updateMemberByReRegister">
+        update member
+        set reqEndDttm = #{reReqEndDttm},
+            telcoTxId = #{certificationResponseDto.telcoTxId},
+            certTxId = #{certificationResponseDto.certTxId}
+        where reqTxId = #{certificationResponseDto.reqTxId}
     </update>
 </mapper>

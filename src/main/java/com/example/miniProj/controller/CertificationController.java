@@ -10,8 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import static com.example.miniProj.util.StageServer.certificationUrl;
-import static com.example.miniProj.util.StageServer.verificationUrl;
+import static com.example.miniProj.util.Constants.*;
 
 @Controller
 @RequiredArgsConstructor
@@ -45,27 +44,30 @@ public class CertificationController {
         System.out.println(memberDto);
         System.out.println(certificationRequestDto);
 
-        return memberService.postHttpClientByLogin(certificationRequestDto, certificationUrl);
+//        return memberService.postHttpClientByLogin(certificationRequestDto, certificationUrl);
+        return memberService.postHttpClientByLogin(certificationRequestDto, certificationTestUrl, FIRST_REGISTER);
     }
 
     @PostMapping(value = "/reRequestRegister")
     @ResponseBody
     public CertificationResponseDto reRequestCertificate(@RequestBody String certTxId) throws Exception {
 
-        CertificationRequestDto certificationTest = memberService.findCertification(certTxId);
+        CertificationRequestDto reRegisterCertification = memberService.findCertification(certTxId);
+        System.out.println(reRegisterCertification);
+        memberService.resetReqEndDttm(reRegisterCertification);
 
-        System.out.println(certificationTest);
-
-        return memberService.postHttpClientByLogin(certificationTest, certificationUrl);
+//        return memberService.postHttpClientByLogin(reRegisterCertification, certificationUrl);
+        return memberService.postHttpClientByLogin(reRegisterCertification, certificationTestUrl, RE_REGISTER);
     }
 
     @PostMapping(value = "/joinRegister")
     @ResponseBody
-    public VerifyResultResponseDto joinCertificate(@RequestBody String certTxId) {
-
+    public VerifyResultResponseDto joinCertificate(@RequestBody String certTxId) throws Exception {
         VerificationRequestDto verificationRequestDto = memberService.getResult(certTxId);
+        System.out.println("Controller Layer: " + verificationRequestDto);
 
-        return memberService.postHttpClientByRegister(verificationRequestDto, verificationUrl);
+//        return memberService.postHttpClientByRegister(verificationRequestDto, verificationUrl);
+        return memberService.postHttpClientByRegister(verificationRequestDto, verificationTestUrl);
     }
 
     @PostMapping(value = "/resultRegister")
