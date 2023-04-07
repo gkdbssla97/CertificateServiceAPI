@@ -14,4 +14,5 @@ public class VerificationRequestDto {
     private String certTxId;
     private String phoneNo;
     private String userNm;
+    private String signTarget;
 }

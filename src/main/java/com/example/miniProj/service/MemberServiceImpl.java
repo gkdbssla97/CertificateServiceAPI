@@ -305,6 +305,7 @@ public class MemberServiceImpl implements MemberService {
         jsonObject.put("certTxId", verificationRequestDto.getCertTxId());
         jsonObject.put("phoneNo", verificationRequestDto.getPhoneNo());
         jsonObject.put("userNm", verificationRequestDto.getUserNm());
+        jsonObject.put("signTarget", verificationRequestDto.getSignTarget());
 
         return jsonObject;
     }

@@ -10,6 +10,7 @@
              , certTxId
              , phoneNo
             , userNm
+            , signTarget
         from member m
         where certTxId = #{certTxId}
 
